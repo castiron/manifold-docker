@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+build() {
+    if [[ -z ${1} ]]
+    then
+        local commands=("VERSION (x.x.x)")
+        error_message "You must specify the version of Manifold to build."
+        help_message ${FUNCNAME[0]} "${commands[@]}"
+        exit 1
+    fi
+    output "Building v${1} of Manifold and Proxy images"
+    output "Attempting to remove old manifold images..."
+    docker image rm manifold_proxy
+    docker image rm manifold_api
+    _cleanup
+    docker build --no-cache -t manifold_proxy -f ${proxy_dockerfile} .
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${1} -t manifold_api -f ${api_dockerfile} .
+}
+
+compose() {
+    case "${1}" in
+        up)
+            _compose_up
+            ;;
+        down)
+            _compose_down
+            ;;
+        *)
+            local commands=("up" "down")
+            help_message ${FUNCNAME[0]} "${commands[@]}"
+    esac
+}
+
+_compose_up() {
+    _pull_dependencies
+    docker-compose -f ${docker_compose_file} up -d
+    standard_message "Waiting for containers to come up..."
+    # TODO Actually check status of containers
+    sleep 60
+    standard_message "Attempting to run migrations..."
+    docker-compose -f ${docker_compose_file} run api /bin/bash -c "cd api && bin/rails db:migrate"
+    standard_message "Example API route: docker.manifold.lvh:4000/api/v1/projects"
+    standard_message "Teardown command: ./bin/docker-helper compose_down"
+}
+
+_compose_down() {
+    docker-compose -f ${docker_compose_file} down
+}
+
+stack() {
+    case "${1}" in
+        up)
+            _stack_up
+            ;;
+        down)
+            _stack_down
+            ;;
+        *)
+            local commands=("up" "down")
+            help_message ${FUNCNAME[0]} "${commands[@]}"
+    esac
+
+}
+
+_stack_up() {
+    _pull_dependencies
+    docker swarm init
+    docker stack deploy -c ${docker_compose_file} -c ${docker_stack_file} manifold
+    standard_message "Waiting for containers to come up..."
+    sleep 60
+    standard_message "Attempting to run migrations..."
+    docker exec -ti manifold_api.1.$(docker service ps -f 'name=manifold_api.1' manifold_api -q) /bin/bash -c "cd api && bin/rails db:migrate"
+    standard_message "View stack: docker stack ls"
+    standard_message "View containers: docker service ls"
+    standard_message "Logs: docker logs CONTAINER"
+    standard_message "Visualizer: localhost:8084"
+    standard_message "API: docker.manifold.lvh:4000/api"
+    standard_message "Teardown command: ./manifold-docker compose down"
+}
+
+_stack_down(){
+    docker stack rm manifold
+    docker swarm leave --force
+}
+
+
+create_volumes() {
+    docker volume create manifold_data
+    docker volume create manifold_sockets
+}
+
+run_containers() {
+    docker run -d -v manifold_data:/manifold_data -v manifold_sockets:/manifold_sockets manifold_api:latest
+    docker run -d -p 4000:80 -v manifold_data:/manifold_data -v manifold_sockets:/manifold_sockets manifold_proxy:latest
+}
+
+# Private
+
+_cleanup() {
+    output "Cleaning up stale volumes."
+    docker volume prune
+    output "Cleaning up stale images."
+    docker image prune
+}
+
+_container_is_running() {
+#    IS_RUNNING=`docker-compose ps -q ${1}`
+    docker-compose ps -q ${1}
+#if [[ "$IS_RUNNING" != "" ]]; then
+#    echo "The service is running!!!"
+#fi
+}
+_pull_dependencies() {
+    docker pull dockersamples/visualizer:stable
+    docker pull postgres:alpine
+    docker pull redis:alpine
+    docker pull docker.elastic.co/elasticsearch/elasticsearch:6.1.3
+}
+
+_output() {
+    echo -e "\n$1\n"
+}
+
+

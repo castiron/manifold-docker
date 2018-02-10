@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+main() {
+    local compose_dir="compose"
+    local dockerfile_dir="dockerfiles"
+
+    local docker_compose_file="${compose_dir}/docker-compose.yml"
+    local docker_stack_file="${compose_dir}/docker-compose-override.stack.yml"
+    local api_dockerfile="${dockerfile_dir}/manifold_api/Dockerfile"
+    local proxy_dockerfile="${dockerfile_dir}/manifold_proxy/Dockerfile"
+
+    local manifold_src="${HOME}/src/manifold/"
+
+    if [ ! -f "${docker_compose_file}" ]
+    then
+        error_message "Can't locate: $(pwd)/compose/docker-compose.yml"
+        error_message "Please run from the root of manifold docker project."
+        help_message
+        exit 1
+    fi
+
+    source "bin/manifold-docker/commands"
+
+
+    case "${1}" in
+        build)
+            build ${2}
+            ;;
+        compose)
+            compose ${2}
+            ;;
+        stack)
+            stack ${2}
+            ;;
+        *)
+            help_message
+    esac
+}
+
+help_message() {
+
+local base_usage=$0
+local base_commands=("build" "compose" "stack")
+
+local usage_example=${base_usage}
+
+
+if [[ -n ${1} ]]
+then
+    usage_example="${base_usage} ${1}"
+fi
+
+if [[ -n ${2} ]]
+then
+    unset base_commands
+    commands="${2}"
+fi
+
+cat <<HelpMessage
+
+Usage: ${usage_example}
+
+Commands:
+
+    `printf '\t%s\n' "${base_commands[@]}"`
+    `printf '\t%s\n' "${commands[@]}"`
+
+
+HelpMessage
+
+}
+
+error_message() {
+    printf "\n[!] %s [!]\n" "${1}"
+}
+
+standard_message() {
+    printf "\n%s\n" "${1}"
+}
+
+main $*
