@@ -25,8 +25,18 @@ compose() {
         down)
             _compose_down
             ;;
+        run)
+            if [[ -z ${2} ]]
+            then
+                local commands=("COMMAND")
+                error_message "You must specify the command you wish compose to run."
+                help_message "${FUNCNAME[0]} run" "${commands[@]}"
+                exit 1
+            fi
+            _compose_run "${2}"
+            ;;
         *)
-            local commands=("up" "down")
+            local commands=("up" "down" "run")
             help_message ${FUNCNAME[0]} "${commands[@]}"
     esac
 }
@@ -37,14 +47,24 @@ _compose_up() {
     standard_message "Waiting for containers to come up..."
     # TODO Actually check status of containers
     sleep 60
-    standard_message "Attempting to run migrations..."
-    docker-compose -f ${docker_compose_file} run api /bin/bash -c "cd api && bin/rails db:migrate"
-    standard_message "Example API route: docker.manifold.lvh:4000/api/v1/projects"
-    standard_message "Teardown command: ./bin/docker-helper compose_down"
+    _compose_run "cd api && bin/rails db:migrate"
+    _compose_help_message
 }
 
 _compose_down() {
     docker-compose -f ${docker_compose_file} down
+}
+
+_compose_run() {
+    standard_message "Attempting to run: ${1}"
+    docker-compose -f ${docker_compose_file} run api /bin/bash -c "${1}"
+}
+
+_compose_help_message() {
+cat << ComposeHelpMessage
+    Example API route: docker.manifold.lvh:4000/api/v1/projects
+    Teardown command: ./manifold-docker compose down
+ComposeHelpMessage
 }
 
 stack() {
@@ -55,8 +75,18 @@ stack() {
         down)
             _stack_down
             ;;
+        run)
+            if [[ -z ${2} ]]
+            then
+                local commands=("COMMAND")
+                error_message "You must specify the command you wish to run on the stack."
+                help_message "${FUNCNAME[0]} run" "${commands[@]}"
+                exit 1
+            fi
+            _stack_run "${2}"
+            ;;
         *)
-            local commands=("up" "down")
+            local commands=("up" "down" "run")
             help_message ${FUNCNAME[0]} "${commands[@]}"
     esac
 
@@ -64,18 +94,14 @@ stack() {
 
 _stack_up() {
     _pull_dependencies
+    _stack_generate_config
     docker swarm init
-    docker stack deploy -c ${docker_compose_file} -c ${docker_stack_file} manifold
+    docker stack deploy -c ${docker_stack_file} manifold
     standard_message "Waiting for containers to come up..."
+    # TODO Actually check status of containers
     sleep 60
-    standard_message "Attempting to run migrations..."
-    docker exec -ti manifold_api.1.$(docker service ps -f 'name=manifold_api.1' manifold_api -q) /bin/bash -c "cd api && bin/rails db:migrate"
-    standard_message "View stack: docker stack ls"
-    standard_message "View containers: docker service ls"
-    standard_message "Logs: docker logs CONTAINER"
-    standard_message "Visualizer: localhost:8084"
-    standard_message "API: docker.manifold.lvh:4000/api"
-    standard_message "Teardown command: ./manifold-docker compose down"
+    _stack_run  "cd api && bin/rails db:migrate"
+    _stack_help_message
 }
 
 _stack_down(){
@@ -83,6 +109,24 @@ _stack_down(){
     docker swarm leave --force
 }
 
+_stack_run() {
+    standard_message "Attempting to run: ${1}"
+    docker exec -ti manifold_api.1.$(docker service ps -f 'name=manifold_api.1' manifold_api -q) /bin/bash -c "${1}"
+}
+
+_stack_generate_config() {
+    docker-compose -f ${docker_compose_file} -f ${docker_compose_override_file} config > ${docker_stack_file}
+}
+_stack_help_message() {
+cat <<StackHelpMessage
+    View stack: docker stack ls
+    View containers: docker service ls
+    Logs: docker logs CONTAINER
+    Visualizer: http://localhost:8084
+    Example API route: http://docker.manifold.lvh:4000/api/v1/projects
+    Teardown command: ./manifold-docker stack down
+StackHelpMessage
+}
 
 create_volumes() {
     docker volume create manifold_data

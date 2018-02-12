@@ -5,7 +5,8 @@ main() {
     local dockerfile_dir="dockerfiles"
 
     local docker_compose_file="${compose_dir}/docker-compose.yml"
-    local docker_stack_file="${compose_dir}/docker-compose-override.stack.yml"
+    local docker_compose_override_file="${compose_dir}/docker-compose-override.stack.yml"
+    local docker_stack_file="${compose_dir}/docker-stack.yml"
     local api_dockerfile="${dockerfile_dir}/manifold_api/Dockerfile"
     local proxy_dockerfile="${dockerfile_dir}/manifold_proxy/Dockerfile"
 
@@ -39,22 +40,22 @@ main() {
 
 help_message() {
 
-local base_usage=$0
-local base_commands=("build" "compose" "stack")
+    local base_usage=$0
+    local base_commands=("build" "compose" "stack")
 
-local usage_example=${base_usage}
+    local usage_example=${base_usage}
 
 
-if [[ -n ${1} ]]
-then
-    usage_example="${base_usage} ${1}"
-fi
+    if [[ -n ${1} ]]
+    then
+        usage_example="${base_usage} ${1}"
+    fi
 
-if [[ -n ${2} ]]
-then
-    unset base_commands
-    commands="${2}"
-fi
+    if [[ -n ${2} ]]
+    then
+        unset base_commands
+        commands="${2}"
+    fi
 
 cat <<HelpMessage
 
