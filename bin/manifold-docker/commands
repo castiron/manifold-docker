@@ -141,9 +141,9 @@ run_containers() {
 # Private
 
 _cleanup() {
-    output "Cleaning up stale volumes."
+    standard_message "Cleaning up stale volumes."
     docker volume prune
-    output "Cleaning up stale images."
+    standard_message "Cleaning up stale images."
     docker image prune
 }
 
