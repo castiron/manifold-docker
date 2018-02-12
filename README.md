@@ -30,6 +30,23 @@ Take it down
 
 `./manifold-docker compose down`
 
+## Enter the swarm
+
+Alternatively, you can run this through Docker swarm
+
+`./manifold-docker stack up`
+
+
+Test it out in your browser: 
+http://docker.manifold.lvh:4000/api/v1/projects
+
+View the visualizer:
+http://localhost:8084
+
+Take it down
+
+`./manifold-docker stack down`
+
 
 ## Next steps
 
