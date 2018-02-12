@@ -8,8 +8,8 @@ build() {
         help_message ${FUNCNAME[0]} "${commands[@]}"
         exit 1
     fi
-    output "Building v${1} of Manifold and Proxy images"
-    output "Attempting to remove old manifold images..."
+    standard_message "Building v${1} of Manifold and Proxy images"
+    standard_message "Attempting to remove old manifold images..."
     docker image rm manifold_proxy
     docker image rm manifold_api
     _cleanup
