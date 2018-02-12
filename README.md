@@ -15,9 +15,9 @@ Commands:
 
 ## Getting started
 
-Build the images
+Build the images for a specific version
 
-`./manifold-docker build`
+`./manifold-docker build 0.4.0`
 
 Run the containers 
 
