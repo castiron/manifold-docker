@@ -34,7 +34,7 @@ services:
       - manifold_data:/manifold_data
       - manifold_sockets:/manifold_sockets
     environment:
-      - DOMAIN=docker.manifold.lvh
+      - DOMAIN=localhost
       - RAILS_DB_USER=postgres
       - RAILS_DB_HOST=postgres
       - BOXEN_POSTGRESQL_PORT=5432

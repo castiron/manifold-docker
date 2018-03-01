@@ -24,7 +24,7 @@ Run the containers
 `./manifold-docker compose up`
 
 Test it out in your browser: 
-http://docker.manifold.lvh:4000/api/v1/projects
+http://localhost:4000/api/v1/projects
 
 Take it down
 
@@ -38,7 +38,7 @@ Alternatively, you can run this through Docker swarm
 
 
 Test it out in your browser: 
-http://docker.manifold.lvh:4000/api/v1/projects
+http://localhost:4000/api/v1/projects
 
 View the visualizer:
 http://localhost:8084

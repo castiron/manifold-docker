@@ -62,7 +62,7 @@ _compose_run() {
 
 _compose_help_message() {
 cat << ComposeHelpMessage
-    Example API route: docker.manifold.lvh:4000/api/v1/projects
+    Example API route: localhost:4000/api/v1/projects
     Teardown command: ./manifold-docker compose down
 ComposeHelpMessage
 }
@@ -123,7 +123,7 @@ cat <<StackHelpMessage
     View containers: docker service ls
     Logs: docker logs CONTAINER
     Visualizer: http://localhost:8084
-    Example API route: http://docker.manifold.lvh:4000/api/v1/projects
+    Example API route: http://localhost:4000/api/v1/projects
     Teardown command: ./manifold-docker stack down
 StackHelpMessage
 }
