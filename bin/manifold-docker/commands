@@ -13,8 +13,8 @@ build() {
     docker image rm manifold_proxy
     docker image rm manifold_api
     _cleanup
-    docker build --no-cache -t manifold_proxy -f ${proxy_dockerfile} .
-    docker build --no-cache --build-arg MANIFOLD_VERSION=${1} -t manifold_api -f ${api_dockerfile} .
+    docker build --no-cache -t manifoldscholar/manifold_proxy:${1} -f ${proxy_dockerfile} .
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${1} -t manifoldscholar/manifold_api:${1} -f ${api_dockerfile} .
 }
 
 compose() {
