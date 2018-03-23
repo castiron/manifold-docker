@@ -25,13 +25,16 @@ main() {
 
     case "${1}" in
         build)
-            build ${2}
+            shift
+            build "$@"
             ;;
         compose)
-            compose ${2}
+            shift
+            compose "$@"
             ;;
         stack)
-            stack ${2}
+            shift
+            stack "$@"
             ;;
         *)
             help_message
