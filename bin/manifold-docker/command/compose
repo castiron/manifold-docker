@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+compose() {
+    case "${1}" in
+        up)
+            if [[ -z ${2} ]]
+            then
+                local commands=("VERSION (x.x.x)")
+                error_message "You must specify the version of Manifold."
+                help_message "${FUNCNAME[0]} ${1}" "${commands[@]}"
+                exit 1
+            fi
+            _compose_up manifold_tag=${2}
+            ;;
+        down)
+            _compose_down
+            ;;
+        run)
+            if [[ -z ${2} ]]
+            then
+                local commands=("COMMAND")
+                error_message "You must specify the command you wish compose to run."
+                help_message "${FUNCNAME[0]} ${1}" "${commands[@]}"
+                exit 1
+            fi
+            _compose_run "${2}"
+            ;;
+        *)
+            local commands=("up" "down" "run")
+            help_message ${FUNCNAME[0]} "${commands[@]}"
+    esac
+}
+
+_compose_up() {
+    local manifold_tag
+    local "${@}"
+    export MANIFOLD_TAG=${manifold_tag}
+    docker-compose -f ${docker_compose_file} up -d
+    standard_message "Waiting for Manifold API (${manifold_tag})..."
+    _wait_for_curl url="http://$(_get_docker_machine_ip):4000/api/v1/projects" response=500
+    standard_message "Waiting for PostgreSQL..."
+    _wait_for_docker_compose container="postgres" command="pg_isready -U postgres -h postgres" response="accepting connections"
+    _compose_run container="api" command="cd api && bin/rails db:migrate"
+    _compose_help_message
+}
+
+_compose_down() {
+    docker-compose -f ${docker_compose_file} down -v
+}
+
+_compose_run() {
+    local container command
+    local "${@}"
+    standard_message "Attempting to run: ${command} on ${container}"
+    docker-compose -f ${docker_compose_file} run ${container} /bin/bash -c "${command}"
+}
+
+_compose_help_message() {
+cat << ComposeHelpMessage
+    Example API route: http://$(_get_docker_machine_ip):4000/api/v1/projects
+    Teardown command: ./manifold-docker compose down
+ComposeHelpMessage
+}

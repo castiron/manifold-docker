@@ -10,7 +10,8 @@ main() {
     local api_dockerfile="${dockerfile_dir}/manifold_api/Dockerfile"
     local proxy_dockerfile="${dockerfile_dir}/manifold_proxy/Dockerfile"
 
-    local manifold_src="${HOME}/src/manifold/"
+    local manifold_src="${HOME}/src/manifold"
+    local command_dir="bin/manifold-docker/command"
 
     if [ ! -f "${docker_compose_file}" ]
     then
@@ -20,8 +21,16 @@ main() {
         exit 1
     fi
 
-    source "bin/manifold-docker/commands"
+    local command_files=$(ls -ap ${command_dir} | grep -v "\./" | grep -v "\../")
 
+    if [[ ${command_files[*]} == '' ]]
+      then
+        error_message "Unable to load command files from: ${command_dir}"
+      else
+        for command_file in ${command_files[@]}; do
+          source "${command_dir}/${command_file}"
+        done
+      fi
 
     case "${1}" in
         build)
@@ -30,10 +39,12 @@ main() {
             ;;
         compose)
             shift
+            _create_docker_machine
             compose "$@"
             ;;
         stack)
             shift
+            _create_docker_machine
             stack "$@"
             ;;
         *)

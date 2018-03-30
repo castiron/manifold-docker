@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+build() {
+    if [[ -z ${1} ]]
+    then
+        local commands=("VERSION (x.x.x)")
+        error_message "You must specify the version of Manifold to build."
+        help_message ${FUNCNAME[0]} "${commands[@]}"
+        exit 1
+    fi
+    standard_message "Building v${1} of Manifold and Proxy images"
+    standard_message "Attempting to remove old manifold images..."
+    docker image rm manifold_proxy
+    docker image rm manifold_api
+    _cleanup
+    docker build --no-cache -t manifoldscholar/manifold_proxy:${1} -f ${proxy_dockerfile} .
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${1} -t manifoldscholar/manifold_api:${1} -f ${api_dockerfile} .
+}
