@@ -28,6 +28,8 @@ _create_docker_machine() {
         esac
         _output "Setting docker-machine environemnt to manifold1"
         eval $(docker-machine env manifold1)
+        _output "Running sudo sysctl -w vm.max_map_count=262144 for ElasticSearch"
+        docker-machine ssh manifold1 "sudo sysctl -w vm.max_map_count=262144"
     fi
 }
 
