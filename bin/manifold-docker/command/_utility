@@ -24,8 +24,7 @@ _create_docker_machine() {
             *)
                 _output "Attempting to bounce the vboxnet0 network interface which requires sudo. Please enter your password if prompted."
                 sudo ifconfig vboxnet0 down && sudo ifconfig vboxnet0 up
-                docker-machine create --driver virtualbox --virtualbox-memory 2048 manifold1
-                docker-machine ssh manifold1 "sudo sysctl -w vm.max_map_count=262144"
+                docker-machine create --driver virtualbox --virtualbox-memory 4096 manifold1
         esac
         _output "Setting docker-machine environemnt to manifold1"
         eval $(docker-machine env manifold1)
