@@ -52,7 +52,7 @@ _cleanup() {
 _wait_for_curl() {
     local url response
     local "${@}"
-    until curl -s -o /dev/null -w %{http_code} ${url} | grep "${response}" >/dev/null;
+    until curl -k -s -o /dev/null -w %{http_code} ${url} | grep "${response}" >/dev/null;
     do
         sleep 5
         echo -n '.'
