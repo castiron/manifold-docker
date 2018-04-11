@@ -22,7 +22,8 @@ _create_docker_machine() {
             Running)
                 ;;
             *)
-                _output "Attempting to bounce the vboxnet0 network interface which requires sudo. Please enter your password if prompted."
+                _output "To prevent a potential communication issue with the docker-machine, now attempting to bounce vboxnet0 network interface which requires sudo."
+                _output "Please enter your password if prompted. (see above)"
                 sudo ifconfig vboxnet0 down && sudo ifconfig vboxnet0 up
                 docker-machine create --driver virtualbox --virtualbox-memory 4096 manifold1
         esac
