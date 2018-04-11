@@ -4,8 +4,6 @@ ARG MANIFOLD_VERSION
 
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
 
-#RUN apk add --update --no-cache build-base less tzdata git wget tar nodejs postgresql-dev
-
 WORKDIR /opt
 RUN wget https://github.com/ManifoldScholar/manifold/archive/v$MANIFOLD_VERSION.tar.gz
 RUN tar -xvf v$MANIFOLD_VERSION.tar.gz
