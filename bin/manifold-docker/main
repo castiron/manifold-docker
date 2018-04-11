@@ -8,6 +8,7 @@ main() {
     local docker_compose_override_file="${compose_dir}/docker-compose-override.stack.yml"
     local docker_stack_file="${compose_dir}/docker-stack.yml"
     local api_dockerfile="${dockerfile_dir}/manifold_api/Dockerfile"
+    local client_dockerfile="${dockerfile_dir}/manifold_client/Dockerfile"
     local proxy_dockerfile="${dockerfile_dir}/manifold_proxy/Dockerfile"
 
     local manifold_src="${HOME}/src/manifold"
