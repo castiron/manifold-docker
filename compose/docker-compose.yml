@@ -51,7 +51,23 @@ services:
       - CABLE_SERVER_SOCKET_DIR=/manifold_sockets
       - CABLE_SERVER_SOCKET_PATH=/manifold_sockets/manifold-cable
       - RAILS_SECRET_KEY=f673814a9129dd345a9d3b0b34847eac04d25dc1127f21292c7d4bada6c3bdc2d83709f0ba8ec510efc9ee22b5993f1429259934aa71c5db8f64a4325af107a9
-    command: bin/manifold start api
+    command: bin/manifold start --no-client --no-elasticsearch
+    networks:
+      - network1
+  client:
+    image: manifoldscholar/manifold_client:${MANIFOLD_TAG}
+    environment:
+      - DOMAIN=localhost
+      - API_URL=http://${DOCKER_IP}:4000
+      - NODE_ENV=production
+      - RAILS_ENV=development
+      - CLIENT_WEB_SERVER_SOCKET=/manifold_sockets/manifold-client
+    volumes:
+      - manifold_data:/manifold_data
+      - manifold_sockets:/manifold_sockets
+    command: yarn serve
+    ports:
+      - "3010:3010"
     networks:
       - network1
   proxy:
