@@ -15,16 +15,9 @@ Commands:
 
 ## Getting started
 
-Build the images for a specific version
+Run the containers
 
-`./manifold-docker build 0.4.0`
-
-Run the containers 
-
-`./manifold-docker compose up`
-
-Test it out in your browser: 
-http://localhost:4000/api/v1/projects
+`./manifold-docker compose up 0.4.1`
 
 Take it down
 
@@ -34,14 +27,7 @@ Take it down
 
 Alternatively, you can run this through Docker swarm
 
-`./manifold-docker stack up`
-
-
-Test it out in your browser: 
-http://localhost:4000/api/v1/projects
-
-View the visualizer:
-http://localhost:8084
+`./manifold-docker stack up 0.4.1`
 
 Take it down
 
