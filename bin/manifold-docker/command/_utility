@@ -82,6 +82,16 @@ _wait_for_docker_exec() {
     done
 }
 
+_wait_for_docker_container_logs() {
+    local container response
+    local "${@}"
+    until docker container logs ${container} | grep "${response}" >/dev/null;
+    do
+        sleep 5
+        echo -n '.'
+    done
+}
+
 _pull_dependencies() {
     local manifold_tag
     local "${@}"
