@@ -42,11 +42,14 @@ _get_docker_machine_ip() {
     fi
 }
 
-_cleanup() {
-    standard_message "Cleaning up stale volumes."
-    docker volume prune
+_cleanup_images() {
     standard_message "Cleaning up stale images."
     docker image prune
+}
+
+_cleanup_volumes() {
+    standard_message "Cleaning up stale volumes."
+    docker volume prune
 }
 
 _wait_for_curl() {
