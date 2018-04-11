@@ -46,6 +46,7 @@ _compose_up() {
     __manifold_api_loading
     __postgres_loading
     _compose_run container="api" command="cd api && bin/rails db:migrate"
+    _compose_run container="api" command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
     __manifold_client_loading
     _compose_help_message
 }
@@ -67,7 +68,11 @@ cat << ComposeHelpMessage
     Manifold:
         https://$(_get_docker_ip):4000/
 
-    Setup admin user:
+    Admin User: email@example.com
+    Admin Password: M@n1f0ld
+
+    Setup additional admin user:
+        eval \$(docker-machine env manifold1) # Required if running on macOS
         docker exec -it compose_api_1 /bin/bash -c "cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
 
     Example API route:
