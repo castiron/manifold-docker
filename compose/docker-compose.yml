@@ -39,7 +39,7 @@ services:
       - manifold_data:/manifold_data
       - manifold_sockets:/manifold_sockets
     environment:
-      - DOMAIN=localhost
+      - DOMAIN=${DOCKER_IP}:4000
       - RAILS_DB_NAME=postgres
       - RAILS_DB_USER=postgres
       - RAILS_DB_HOST=postgres
@@ -47,6 +47,9 @@ services:
       - RAILS_REDIS_URL=redis://redis:6379
       - RACK_ENV=development
       - RAILS_ENV=development
+      - ELASTICSEARCH_URL=http://${DOCKER_IP}:9200
+      - CABLE_SERVER_SOCKET_DIR=/manifold_sockets
+      - CABLE_SERVER_SOCKET_PATH=/manifold_sockets/manifold-cable
       - RAILS_SECRET_KEY=f673814a9129dd345a9d3b0b34847eac04d25dc1127f21292c7d4bada6c3bdc2d83709f0ba8ec510efc9ee22b5993f1429259934aa71c5db8f64a4325af107a9
     command: bin/manifold start api
     networks:

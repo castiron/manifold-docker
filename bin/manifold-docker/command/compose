@@ -34,7 +34,7 @@ compose() {
 _compose_up() {
     local manifold_tag
     local "${@}"
-    export MANIFOLD_TAG=${manifold_tag}
+    export MANIFOLD_TAG=${manifold_tag} DOCKER_IP=$(_get_docker_ip)
     docker-compose -f ${docker_compose_file} up -d
     standard_message "Waiting for Manifold API (${manifold_tag})..."
     _wait_for_curl url="http://$(_get_docker_machine_ip):4000/api/v1/projects" response=500
@@ -57,7 +57,18 @@ _compose_run() {
 
 _compose_help_message() {
 cat << ComposeHelpMessage
-    Example API route: http://$(_get_docker_machine_ip):4000/api/v1/projects
-    Teardown command: ./manifold-docker compose down
+
+    Manifold:
+        https://$(_get_docker_ip):4000/
+
+    Setup admin user:
+        docker exec -it compose_api_1 /bin/bash -c "cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
+
+    Example API route:
+        https://$(_get_docker_ip):4000/api/v1/projects
+
+    Teardown command:
+        ./manifold-docker compose down
+
 ComposeHelpMessage
 }

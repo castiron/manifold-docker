@@ -33,12 +33,12 @@ _create_docker_machine() {
     fi
 }
 
-_get_docker_machine_ip() {
+_get_docker_ip() {
     if [[ $OSTYPE = *"darwin"* ]]
     then
         docker-machine ip manifold1
     else
-        echo 'localhost'
+        echo '127.0.0.1'
     fi
 }
 
