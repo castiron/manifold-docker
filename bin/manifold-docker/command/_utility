@@ -93,6 +93,16 @@ _wait_for_docker_container_logs() {
     done
 }
 
+_wait_for_docker_service_logs() {
+    local service response
+    local "${@}"
+    until docker service logs ${container} | grep "${response}" >/dev/null;
+    do
+        sleep 5
+        echo -n '.'
+    done
+}
+
 _pull_dependencies() {
     local manifold_tag
     local "${@}"
@@ -106,4 +116,33 @@ _pull_dependencies() {
 
 _output() {
     echo -e "\n$1\n"
+}
+
+__manifold_api_loading() {
+    standard_message "Waiting for Manifold API (${manifold_tag})..."
+    _wait_for_curl url="https://$(_get_docker_ip):4000/api/v1/projects" response=500
+}
+__manifold_client_loading() {
+    local swarm_mode
+    local "${@}"
+
+    standard_message "Waiting for Manifold Client (${manifold_tag})..."
+    if [ -z "${swarm_mode}" ]
+    then
+        _wait_for_docker_container_logs container="compose_client_1" response="Client server is listening"
+    else
+        _wait_for_docker_service_logs service="manifold_client" response="Client server is listening"
+    fi
+}
+__postgres_loading() {
+    local swarm_mode
+    local "${@}"
+    standard_message "Waiting for PostgreSQL..."
+    if [ -z "${swarm_mode}" ]
+    then
+        _wait_for_docker_compose container="postgres" command="pg_isready -U postgres -h postgres" response="accepting connections"
+    else
+        _wait_for_docker_exec service="manifold_postgres" command="pg_isready -U postgres -h postgres" response="accepting connections"
+    fi
+
 }
