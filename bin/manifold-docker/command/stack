@@ -35,17 +35,15 @@ stack() {
 _stack_up() {
     local manifold_tag
     local "${@}"
-    export MANIFOLD_TAG=${manifold_tag}
+    export MANIFOLD_TAG=${manifold_tag} MANIFOLD_DOMAIN=$(_get_docker_ip)
     _stack_generate_config
-    docker swarm init --advertise-addr $(_get_docker_machine_ip)
+    docker swarm init --advertise-addr $(_get_docker_ip)
     docker-compose -f ${docker_stack_file} pull
     docker stack deploy -c ${docker_stack_file} manifold
-
-    standard_message "Waiting for Manifold API (${manifold_tag})..."
-    _wait_for_curl url="http://$(_get_docker_machine_ip):4000/api/v1/projects" response=500
-    standard_message "Waiting for PostgreSQL..."
-    _wait_for_docker_exec service="manifold_postgres" command="pg_isready -U postgres -h postgres" response="accepting connections"
+    __manifold_api_loading swarm_mode=true
+    __postgres_loading swarm_mode=true
     _stack_run  service="manifold_api" command="cd api && bin/rails db:migrate"
+    _compose_run container="api" command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
     _stack_help_message
 }
 
@@ -66,11 +64,23 @@ _stack_generate_config() {
 }
 _stack_help_message() {
 cat <<StackHelpMessage
-    View stack: docker stack ls
-    View containers: docker service ls
-    Logs: docker logs CONTAINER
-    Visualizer: http://$(_get_docker_machine_ip):8084
-    Example API route: http://$(_get_docker_machine_ip):4000/api/v1/projects
-    Teardown command: ./manifold-docker stack down
+
+    Manifold:
+        https://$(_get_docker_ip):4000/
+
+    Admin User: email@example.com
+    Admin Password: M@n1f0ld
+
+    Setup additional admin user:
+        eval \$(docker-machine env manifold1) # Required if running on macOS
+        docker exec -it compose_api_1 /bin/bash -c "cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
+
+    Visualizer:
+        http://$(_get_docker_ip):8084
+    Example API route:
+        https://$(_get_docker_ip):4000/api/v1/projects
+
+    Teardown command:
+        ./manifold-docker stack down
 StackHelpMessage
 }
