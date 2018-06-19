@@ -35,7 +35,7 @@ stack() {
 _stack_up() {
     local manifold_tag
     local "${@}"
-    export MANIFOLD_TAG=${manifold_tag} MANIFOLD_DOMAIN=$(_get_docker_ip)
+    export MANIFOLD_TAG=${manifold_tag} DOCKER_IP=$(_get_docker_ip)
     _stack_generate_config
     docker swarm init --advertise-addr $(_get_docker_ip)
     docker-compose -f ${docker_stack_file} pull
@@ -60,7 +60,7 @@ _stack_run() {
 }
 
 _stack_generate_config() {
-    export MANIFOLD_TAG=${manifold_tag}; docker-compose -f ${docker_compose_file} -f ${docker_compose_override_file} config > ${docker_stack_file}
+    docker-compose -f ${docker_compose_file} -f ${docker_compose_override_file} config > ${docker_stack_file}
 }
 _stack_help_message() {
 cat <<StackHelpMessage
