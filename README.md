@@ -4,22 +4,25 @@
 
 ### General
 
-Install Docker for your platform: https://docs.docker.com/install/
+* 4GB RAM
+* 2 CPU cores
 
-Recommended that you install the current version but minimum version >= 17.03
+
+### Docker
+* Install Docker for your platform: https://docs.docker.com/install/
+    * _Recommended that you install the current version but minimum version >= 17.03_
  
-Install docker-compose for your platform: https://docs.docker.com/compose/install/
-_Note: docker-compose might be installed already with docker depending on your platform._
+* Install docker-compose for your platform: https://docs.docker.com/compose/install/
+    * _Note: docker-compose might be installed already with docker depending on your platform._
 
-Install docker-machine for your platform: https://docs.docker.com/machine/install-machine/
-_Note: docker-machine might be installed already with docker depending on your platform._
+* Install docker-machine for your platform: https://docs.docker.com/machine/install-machine/
+    * _Note: docker-machine might be installed already with docker depending on your platform._
 
 ### OS X
 
-You need to install VirtualBox: https://www.virtualbox.org/wiki/Downloads
-
-This is a temporary requirement and will be removed once this issue with Docker for Mac is resolved:
-https://github.com/docker/for-mac/issues/1835
+* Install VirtualBox: https://www.virtualbox.org/wiki/Downloads
+     * _This is a temporary requirement and will be removed once this issue with Docker for Mac is resolved:
+https://github.com/docker/for-mac/issues/1835_
 
 ## Setup
 
@@ -39,19 +42,6 @@ https://github.com/ManifoldScholar/manifold-docker/releases
 
 
 ## Getting started
-
-### Using the helper script
-
-```
-Usage: ./manifold-docker
-
-Commands:
-
-    build
-    compose
-    stack
-
-```
 
 ### Run the containers
 
