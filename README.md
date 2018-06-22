@@ -59,6 +59,10 @@ Commands:
 
 After the script completes, some basic usage information will be displayed.
 
+An optional domain parameter can be passed to allow access using a domain.
+
+`./manifold-docker compose up 1.0.1 example.domain.com`
+
 Take it down
 
 `./manifold-docker compose down`
@@ -70,6 +74,10 @@ Alternatively, you can run this through Docker swarm
 `./manifold-docker stack up 1.0.1`
 
 After the script completes, some basic usage information will be displayed.
+
+An optional domain parameter can be passed to allow access using a domain.
+
+`./manifold-docker stack up 1.0.1 example.domain.com`
 
 Take it down
 

@@ -39,7 +39,7 @@ services:
       - manifold_data:/manifold_data
       - manifold_sockets:/manifold_sockets
     environment:
-      - DOMAIN=${DOCKER_IP}:4000
+      - DOMAIN=${DOCKER_IP_OR_DOMAIN}:4000
       - RAILS_DB_NAME=postgres
       - RAILS_DB_USER=postgres
       - RAILS_DB_HOST=postgres
@@ -58,7 +58,7 @@ services:
     image: manifoldscholar/manifold_client:${MANIFOLD_TAG}
     environment:
       - DOMAIN=localhost
-      - API_URL=http://${DOCKER_IP}:4000
+      - API_URL=http://${DOCKER_IP_OR_DOMAIN}:4000
       - NODE_ENV=production
       - RAILS_ENV=development
       - CLIENT_WEB_SERVER_SOCKET=/manifold_sockets/manifold-client

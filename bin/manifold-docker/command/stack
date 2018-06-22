@@ -10,6 +10,7 @@ stack() {
                 help_message "${FUNCNAME[0]} ${1}" "${commands[@]}"
                 exit 1
             fi
+            MANIFOLD_DOMAIN=${3}
             _stack_up manifold_tag=${2}
             ;;
         down)
@@ -35,7 +36,7 @@ stack() {
 _stack_up() {
     local manifold_tag
     local "${@}"
-    export MANIFOLD_TAG=${manifold_tag} DOCKER_IP=$(_get_docker_ip)
+    export MANIFOLD_TAG=${manifold_tag} DOCKER_IP=$(_get_docker_ip) DOCKER_IP_OR_DOMAIN=$(_get_docker_ip_or_domain)
     _stack_generate_config
     docker swarm init --advertise-addr $(_get_docker_ip)
     docker-compose -f ${docker_stack_file} pull
@@ -66,7 +67,7 @@ _stack_help_message() {
 cat <<StackHelpMessage
 
     Manifold:
-        https://$(_get_docker_ip):4000/
+        https://$(_get_docker_ip_or_domain):4000/
 
     Admin User: email@example.com
     Admin Password: M@n1f0ld
@@ -76,9 +77,9 @@ cat <<StackHelpMessage
         docker exec -it compose_api_1 /bin/bash -c "cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
 
     Visualizer:
-        http://$(_get_docker_ip):8084
+        http://$(_get_docker_ip_or_domain):8084
     Example API route:
-        https://$(_get_docker_ip):4000/api/v1/projects
+        https://$(_get_docker_ip_or_domain):4000/api/v1/projects
 
     Teardown command:
         ./manifold-docker stack down

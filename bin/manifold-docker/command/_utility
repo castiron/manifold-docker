@@ -43,6 +43,15 @@ _get_docker_ip() {
     fi
 }
 
+_get_docker_ip_or_domain() {
+    if [ -z ${MANIFOLD_DOMAIN} ]
+    then
+        _get_docker_ip
+    else
+        echo ${MANIFOLD_DOMAIN}
+    fi
+}
+
 _cleanup_images() {
     standard_message "Cleaning up stale images."
     docker image prune

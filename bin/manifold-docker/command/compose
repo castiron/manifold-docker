@@ -10,6 +10,7 @@ compose() {
                 help_message "${FUNCNAME[0]} ${1}" "${commands[@]}"
                 exit 1
             fi
+            MANIFOLD_DOMAIN=${3}
             _compose_up manifold_tag=${2}
             ;;
         down)
@@ -41,7 +42,7 @@ compose() {
 _compose_up() {
     local manifold_tag
     local "${@}"
-    export MANIFOLD_TAG=${manifold_tag} DOCKER_IP=$(_get_docker_ip)
+    export MANIFOLD_TAG=${manifold_tag} DOCKER_IP=$(_get_docker_ip) DOCKER_IP_OR_DOMAIN=$(_get_docker_ip_or_domain)
     docker-compose -f ${docker_compose_file} up -d
     __manifold_api_loading
     __postgres_loading
@@ -66,7 +67,7 @@ _compose_help_message() {
 cat << ComposeHelpMessage
 
     Manifold:
-        https://$(_get_docker_ip):4000/
+        https://$(_get_docker_ip_or_domain):4000/
 
     Admin User: email@example.com
     Admin Password: M@n1f0ld
@@ -76,7 +77,7 @@ cat << ComposeHelpMessage
         docker exec -it compose_api_1 /bin/bash -c "cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
 
     Example API route:
-        https://$(_get_docker_ip):4000/api/v1/projects
+        https://$(_get_docker_ip_or_domain):4000/api/v1/projects
 
     Teardown command:
         ./manifold-docker compose down
