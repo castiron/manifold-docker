@@ -45,11 +45,11 @@ _compose_up() {
     export MANIFOLD_TAG=${manifold_tag} DOCKER_IP=$(_get_docker_ip) DOCKER_IP_OR_DOMAIN=$(_get_docker_ip_or_domain)
     docker-compose -f ${docker_compose_file} up -d
     __manifold_api_loading
-    __postgres_loading
+    __postgres_loading swarm_mode=0
     _compose_run container="api" command="cd api && bin/rails db:migrate"
     _compose_run container="api" command="cd api && bin/rails db:seed"
     _compose_run container="api" command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
-    __manifold_client_loading
+    __manifold_client_loading swarm_mode=0
     _compose_help_message
 }
 

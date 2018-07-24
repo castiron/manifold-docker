@@ -41,11 +41,12 @@ _stack_up() {
     docker swarm init --advertise-addr $(_get_docker_ip)
     docker-compose -f ${docker_stack_file} pull
     docker stack deploy -c ${docker_stack_file} manifold
-    __manifold_api_loading swarm_mode=true
-    __postgres_loading swarm_mode=true
+    __manifold_api_loading
+    __postgres_loading swarm_mode=1
     _stack_run service="manifold_api" command="cd api && bin/rails db:migrate"
     _stack_run service="manifold_api" command="cd api && bin/rails db:seed"
     _stack_run service="manifold_api" command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
+    __manifold_client_loading swarm_mode=1
     _stack_help_message
 }
 

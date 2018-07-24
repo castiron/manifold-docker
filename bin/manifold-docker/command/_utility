@@ -134,24 +134,37 @@ __manifold_api_loading() {
 __manifold_client_loading() {
     local swarm_mode
     local "${@}"
-
     standard_message "Waiting for Manifold Client (${manifold_tag})..."
-    if [ -z "${swarm_mode}" ]
-    then
-        _wait_for_docker_container_logs container="compose_client_1" response="Client server is listening"
-    else
-        _wait_for_docker_service_logs service="manifold_client" response="Client server is listening"
-    fi
+    case ${swarm_mode} in
+        0)
+            _wait_for_docker_container_logs container="compose_client_1"\
+            response="Client server is listening"
+            ;;
+        1)
+            _wait_for_docker_service_logs service="manifold_client"\
+            response="Client server is listening"
+            ;;
+        *)
+            error_message "swarm_mode must be set. Valid values: 0 or 1"
+    esac
+
 }
 __postgres_loading() {
     local swarm_mode
     local "${@}"
     standard_message "Waiting for PostgreSQL..."
-    if [ -z "${swarm_mode}" ]
-    then
-        _wait_for_docker_compose container="postgres" command="pg_isready -U postgres -h postgres" response="accepting connections"
-    else
-        _wait_for_docker_exec service="manifold_postgres" command="pg_isready -U postgres -h postgres" response="accepting connections"
-    fi
-
+    case ${swarm_mode} in
+        0)
+            _wait_for_docker_compose container="postgres"\
+            command="pg_isready -U postgres -h postgres"\
+            response="accepting connections"
+            ;;
+        1)
+            _wait_for_docker_exec service="manifold_postgres"\
+            command="pg_isready -U postgres -h postgres"\
+            response="accepting connections"
+            ;;
+        *)
+            error_message "swarm_mode must be set. Valid values: 0 or 1"
+    esac
 }
