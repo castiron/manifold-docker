@@ -44,6 +44,7 @@ _stack_up() {
     __manifold_api_loading swarm_mode=true
     __postgres_loading swarm_mode=true
     _stack_run service="manifold_api" command="cd api && bin/rails db:migrate"
+    _stack_run service="manifold_api" command="cd api && bin/rails db:seed"
     _stack_run service="manifold_api" command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
     _stack_help_message
 }
