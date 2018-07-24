@@ -19,12 +19,12 @@ stack() {
         run)
             if [[ -z ${2} ]]
             then
-                local commands=("COMMAND")
-                error_message "You must specify the command you wish to run on the stack."
+                local commands=("SERVICE")
+                error_message "You must specify the service you wish to run the command on."
                 help_message "${FUNCNAME[0]} ${1}" "${commands[@]}"
                 exit 1
             fi
-            _stack_run container="manifold_api" command="${2}"
+            _stack_run service="${2}" prompt=1
             ;;
         *)
             local commands=("up" "down" "run")
@@ -43,9 +43,10 @@ _stack_up() {
     docker stack deploy -c ${docker_stack_file} manifold
     __manifold_api_loading
     __postgres_loading swarm_mode=1
-    _stack_run service="manifold_api" command="cd api && bin/rails db:migrate"
-    _stack_run service="manifold_api" command="cd api && bin/rails db:seed"
-    _stack_run service="manifold_api" command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
+    _stack_run service="manifold_api" command="cd api && bin/rails db:migrate" prompt=0
+    _stack_run service="manifold_api" command="cd api && bin/rails db:seed" prompt=0
+    _stack_run service="manifold_api" \
+    command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']" prompt=0
     __manifold_client_loading swarm_mode=1
     _stack_help_message
 }
@@ -56,9 +57,14 @@ _stack_down(){
 }
 
 _stack_run() {
-    local service command
+    local service command prompt
     local "${@}"
-    standard_message "Attempting to run: ${command} on ${service}"
+     if [ ${prompt} == 1 ]
+    then
+        standard_message "Service set to [${service}]. What command would you like to run?"
+        read command
+    fi
+    standard_message "Service set to [${service}]. Attempting to run: ${command}"
     docker exec -ti ${service}.1.$(docker service ps -f "name=${service}.1" ${service} -q) /bin/bash -c "${command}"
 }
 
