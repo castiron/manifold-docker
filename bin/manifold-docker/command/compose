@@ -19,19 +19,20 @@ compose() {
         run)
             if [[ -z ${2} ]]
             then
-                local commands=("CONTAINER")
-                error_message "You must specify the container you wish compose to run on."
+                local commands=("VERSION (x.x.x) CONTAINER")
+                error_message "You must specify the version of Manifold."
                 help_message "${FUNCNAME[0]} ${1}" "${commands[@]}"
                 exit 1
             fi
             if [[ -z ${3} ]]
             then
-                local commands=("COMMAND")
-                error_message "You must specify the command you wish compose to run on ${2}."
-                help_message "${FUNCNAME[0]} ${1} ${2}" "${commands[@]}"
+                local commands=("CONTAINER")
+                error_message "You must specify the container you wish compose to run on."
+                help_message "${FUNCNAME[0]} ${1}" "${commands[@]}"
                 exit 1
             fi
-            _compose_run "${2}"
+            export MANIFOLD_TAG=${2}
+            _compose_run container="${3}" prompt=1
             ;;
         *)
             local commands=("up" "down" "run")
@@ -46,9 +47,10 @@ _compose_up() {
     docker-compose -f ${docker_compose_file} up -d
     __manifold_api_loading
     __postgres_loading swarm_mode=0
-    _compose_run container="api" command="cd api && bin/rails db:migrate"
-    _compose_run container="api" command="cd api && bin/rails db:seed"
-    _compose_run container="api" command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']"
+    _compose_run container="api" command="cd api && bin/rails db:migrate" prompt=0
+    _compose_run container="api" command="cd api && bin/rails db:seed" prompt=0
+    _compose_run container="api" \
+    command="cd api && rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']" prompt=0
     __manifold_client_loading swarm_mode=0
     _compose_help_message
 }
@@ -58,8 +60,13 @@ _compose_down() {
 }
 
 _compose_run() {
-    local container command
+    local container command prompt
     local "${@}"
+    if [ ${prompt} == 1 ]
+    then
+        standard_message "Container set to [${container}]. What command would you like to run?"
+        read command
+    fi
     standard_message "Attempting to run: ${command} on ${container}"
     docker-compose -f ${docker_compose_file} run ${container} /bin/bash -c "${command}"
 }
