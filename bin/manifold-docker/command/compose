@@ -67,7 +67,7 @@ _compose_run() {
         standard_message "Container set to [${container}]. What command would you like to run?"
         read command
     fi
-    standard_message "Attempting to run: ${command} on ${container}"
+    standard_message "Container set to [${container}]. Attempting to run: ${command}"
     docker-compose -f ${docker_compose_file} run ${container} /bin/bash -c "${command}"
 }
 
