@@ -105,7 +105,7 @@ _wait_for_docker_container_logs() {
 _wait_for_docker_service_logs() {
     local service response
     local "${@}"
-    until docker service logs ${container} | grep "${response}" >/dev/null;
+    until docker service logs ${service} | grep "${response}" >/dev/null;
     do
         sleep 5
         echo -n '.'
