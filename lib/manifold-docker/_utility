@@ -35,12 +35,16 @@ _create_docker_machine() {
 }
 
 _get_docker_ip() {
-    if [[ $OSTYPE = *"darwin"* ]]
-    then
-        docker-machine ip manifold1
-    else
-        echo '127.0.0.1'
-    fi
+    case $OSTYPE in
+        *"darwin"*)
+            docker-machine ip manifold1
+            ;;
+        'msys')
+            echo 'host.docker.internal'
+            ;;
+        *)
+            echo '127.0.0.1'
+    esac
 }
 
 _get_docker_ip_or_domain() {
