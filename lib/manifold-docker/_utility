@@ -133,7 +133,7 @@ _output() {
 
 __manifold_api_loading() {
     standard_message "Waiting for Manifold API (${manifold_tag})..."
-    _wait_for_curl url="https://$(_get_docker_ip):4000/api/v1/projects" response=500
+    _wait_for_curl url="https://$(_get_docker_ip_or_domain):4000/api/v1/projects" response=500
 }
 __manifold_client_loading() {
     local swarm_mode
