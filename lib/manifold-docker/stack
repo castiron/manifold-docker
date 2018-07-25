@@ -65,7 +65,7 @@ _stack_run() {
         read command
     fi
     standard_message "Service set to [${service}]. Attempting to run: ${command}"
-    docker exec -ti ${service}.1.$(docker service ps -f "name=${service}.1" ${service} -q) /bin/bash -c "${command}"
+    docker exec ${service}.1.$(docker service ps -f "name=${service}.1" ${service} -q) /bin/bash -c "${command}"
 }
 
 _stack_generate_config() {
