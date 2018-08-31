@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:1.15.2
 
 COPY dockerfiles/manifold_proxy/config/default.conf /etc/nginx/conf.d/default.conf
 

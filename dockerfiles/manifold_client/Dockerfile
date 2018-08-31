@@ -1,10 +1,10 @@
-FROM node:8
+FROM node:8.10.0
 
 ARG MANIFOLD_VERSION
 
 # Install Ruby
 RUN mkdir /tmp/ruby
-RUN cd /tmp/ruby && curl --silent ftp://ftp.ruby-lang.org/pub/ruby/2.3/ruby-2.3.5.tar.gz | tar xz
+RUN cd /tmp/ruby && curl --silent https://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.5.tar.gz | tar xz
 RUN cd /tmp/ruby/ruby-2.3.5 && ./configure --disable-install-rdoc && make install
 
 WORKDIR /opt

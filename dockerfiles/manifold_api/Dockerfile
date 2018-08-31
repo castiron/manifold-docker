@@ -2,7 +2,7 @@ FROM ruby:2.3.5
 
 ARG MANIFOLD_VERSION
 
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs libicu-dev
 
 WORKDIR /opt
 RUN wget https://github.com/ManifoldScholar/manifold/archive/v$MANIFOLD_VERSION.tar.gz
@@ -18,8 +18,8 @@ RUN bundle install
 
 RUN bundle install --gemfile=api/Gemfile
 
-RUN mkdir -p /manifold_data/api/public
+RUN mkdir -p /manifold_data/api
 
-RUN cp -r api/public/* /manifold_data/api/public/
+RUN ln -s /opt/manifold-$MANIFOLD_VERSION/api/public /manifold_data/api/public
 
 VOLUME ["/manifold_sockets","/manifold_data"]
