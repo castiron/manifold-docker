@@ -1,31 +1,89 @@
 #!/usr/bin/env bash
 
 build() {
-    if [[ -z ${1} ]]
+    local manifold_version manifold_image
+    local "${@}"
+    if [[ -z ${manifold_version} ]]
     then
-        local commands=("VERSION (x.x.x)")
+        local commands=("VERSION (x.x.x)" "IMAGE (api|client|proxy) [OPTIONAL]")
         error_message "You must specify the version of Manifold to build."
         help_message ${FUNCNAME[0]} "${commands[@]}"
         exit 1
     fi
-    local manifold_version=${1}
 
-    standard_message "Removing existing Manifold (${manifold_version}) images if found"
-    docker image rm manifoldscholar/manifold_proxy:${manifold_version}
-    docker image rm manifoldscholar/manifold_api:${manifold_version}
-    docker image rm manifoldscholar/manifold_client:${manifold_version}
-    _cleanup_images
 
-    standard_message "Building Manifold (${manifold_version}) Proxy image"
-    docker build --no-cache -t manifoldscholar/manifold_proxy:${manifold_version} -f ${proxy_dockerfile} .
-    standard_message "Building Manifold (${manifold_version}) API image"
-    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api:${manifold_version} -f ${api_dockerfile} .
-    standard_message "Building Manifold (${manifold_version}) Client image"
-    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_client:${manifold_version} -f ${client_dockerfile} .
+    case "${manifold_image}" in
+        api)
+            _remove_api_image
+            _cleanup_images
+            _build_api_image
+            ;;
+        client)
+            _remove_client_image
+            _cleanup_images
+            _build_client_image
+            ;;
+        proxy)
+            _remove_proxy_image
+            _cleanup_images
+            _build_proxy_image
+            ;;
+        *)
+            _remove_all_images
+            _build_all_images
+    esac
 
     _build_help_message
 
+}
 
+_remove_all_images() {
+    standard_message "Removing existing Manifold (${manifold_version}) images (ALL) if found"
+    sleep 2
+    _remove_api_image
+    _remove_client_image
+    _remove_proxy_image
+    _cleanup_images
+}
+_build_all_images() {
+    standard_message "Building Manifold (${manifold_version}) images (ALL)"
+    sleep 2
+    _build_api_image
+    _build_client_image
+    _build_proxy_image
+}
+
+_remove_api_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) API image if found"
+    sleep 2
+    docker image rm manifoldscholar/manifold_api:${manifold_version}
+}
+_build_api_image() {
+    standard_message "Building Manifold (${manifold_version}) API image"
+    sleep 2
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api:${manifold_version} -f ${api_dockerfile} .
+}
+
+_remove_client_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) CLIENT image if found"
+    sleep 2
+    docker image rm manifoldscholar/manifold_client:${manifold_version}
+}
+_build_client_image() {
+    standard_message "Building Manifold (${manifold_version}) CLIENT image"
+    sleep 2
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_client:${manifold_version} -f ${client_dockerfile} .
+}
+
+_remove_proxy_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) PROXY image if found"
+    sleep 2
+    docker image rm manifoldscholar/manifold_proxy:${manifold_version}
+}
+_build_proxy_image() {
+    standard_message "Building Manifold (${manifold_version}) PROXY image"
+    sleep 2
+    docker build --no-cache -t manifoldscholar/manifold_proxy:${manifold_version} -f ${proxy_dockerfile} .
 }
 
 _build_help_message() {
