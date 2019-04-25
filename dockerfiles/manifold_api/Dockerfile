@@ -2,7 +2,12 @@ FROM ruby:2.3.5
 
 ARG MANIFOLD_VERSION
 
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs libicu-dev
+RUN echo "deb [check-valid-until=no] http://cdn-fastly.deb.debian.org/debian jessie main" > /etc/apt/sources.list.d/jessie.list
+RUN echo "deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list
+RUN sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list
+RUN apt-get -o Acquire::Check-Valid-Until=false update
+
+RUN apt-get install -y libicu-dev postgresql-client
 
 WORKDIR /opt
 RUN wget https://github.com/ManifoldScholar/manifold/archive/v$MANIFOLD_VERSION.tar.gz
@@ -22,4 +27,8 @@ RUN mkdir -p /manifold_data/api
 
 RUN ln -s /opt/manifold-$MANIFOLD_VERSION/api/public /manifold_data/api/public
 
+COPY dockerfiles/manifold_api/scripts/start-and-run /opt/manifold-$MANIFOLD_VERSION/api/start-and-run
+
 VOLUME ["/manifold_sockets","/manifold_data"]
+
+WORKDIR /opt/manifold-$MANIFOLD_VERSION/api
