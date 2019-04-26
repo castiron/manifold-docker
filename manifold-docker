@@ -7,7 +7,11 @@ main() {
     local docker_compose_file="${compose_dir}/docker-compose.yml"
     local docker_compose_override_file="${compose_dir}/docker-compose-override.stack.yml"
     local docker_stack_file="${compose_dir}/docker-stack.yml"
-    local api_dockerfile="${dockerfile_dir}/manifold_api/Dockerfile"
+    local api_base_dockerfile="${dockerfile_dir}/manifold_api_base/Dockerfile"
+    local api_cable_dockerfile="${dockerfile_dir}/manifold_api_cable/Dockerfile"
+    local api_clockwork_dockerfile="${dockerfile_dir}/manifold_api_clockwork/Dockerfile"
+    local api_rails_dockerfile="${dockerfile_dir}/manifold_api_rails/Dockerfile"
+    local api_sidekiq_dockerfile="${dockerfile_dir}/manifold_api_sidekiq/Dockerfile"
     local client_dockerfile="${dockerfile_dir}/manifold_client/Dockerfile"
     local proxy_dockerfile="${dockerfile_dir}/manifold_proxy/Dockerfile"
 

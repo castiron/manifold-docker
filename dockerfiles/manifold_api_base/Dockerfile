@@ -27,8 +27,6 @@ RUN mkdir -p /manifold_data/api
 
 RUN ln -s /opt/manifold-$MANIFOLD_VERSION/api/public /manifold_data/api/public
 
-COPY dockerfiles/manifold_api/scripts/start-and-run /opt/manifold-$MANIFOLD_VERSION/api/start-and-run
-
 VOLUME ["/manifold_sockets","/manifold_data"]
 
-WORKDIR /opt/manifold-$MANIFOLD_VERSION/api
+

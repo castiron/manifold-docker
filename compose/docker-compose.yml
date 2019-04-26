@@ -35,8 +35,29 @@ services:
       - manifold_data:/manifold_data/redis
     networks:
       - network1
-  api:
-    image: manifoldscholar/manifold_api:${MANIFOLD_TAG}
+  api_cable:
+    image: manifoldscholar/manifold_api_cable:${MANIFOLD_TAG}
+    volumes:
+      - manifold_data:/manifold_data
+      - manifold_sockets:/manifold_sockets
+    env_file:
+      - ./environment/manifold.env
+      - ./environment/rails.env
+    networks:
+      - network1
+  api_clockwork:
+    image: manifoldscholar/manifold_api_clockwork:${MANIFOLD_TAG}
+    volumes:
+      - manifold_data:/manifold_data
+      - manifold_sockets:/manifold_sockets
+    env_file:
+      - ./environment/manifold.env
+      - ./environment/rails.env
+    networks:
+      - network1
+    command: ["./start-and-run", "bin/clockwork clock.rb"]
+  api_rails:
+    image: manifoldscholar/manifold_api_rails:${MANIFOLD_TAG}
     volumes:
       - manifold_data:/manifold_data
       - manifold_sockets:/manifold_sockets
@@ -46,22 +67,27 @@ services:
     command: ["./start-and-run", "bin/puma -C config/puma.rb*"]
     networks:
       - network1
-#  client:
-#    image: manifoldscholar/manifold_client:${MANIFOLD_TAG}
-#    environment:
-#      - DOMAIN=localhost
-#      - API_URL=http://${DOCKER_IP}:4000
-#      - NODE_ENV=production
-#      - RAILS_ENV=development
-#      - CLIENT_WEB_SERVER_SOCKET=/manifold_sockets/manifold-client
-#    volumes:
-#      - manifold_data:/manifold_data
-#      - manifold_sockets:/manifold_sockets
-#    command: yarn serve
-#    ports:
-#      - "3010:3010"
-#    networks:
-#      - network1
+  api_sidekiq:
+    image: manifoldscholar/manifold_api_sidekiq:${MANIFOLD_TAG}
+    volumes:
+      - manifold_data:/manifold_data
+      - manifold_sockets:/manifold_sockets
+    env_file:
+      - ./environment/manifold.env
+      - ./environment/rails.env
+    networks:
+      - network1
+    command: ["./start-and-run", "bin/sidekiq"]
+  client:
+    image: manifoldscholar/manifold_client:${MANIFOLD_TAG}
+    env_file:
+      - ./environment/manifold.env
+    volumes:
+      - manifold_data:/manifold_data
+      - manifold_sockets:/manifold_sockets
+    command: yarn run start
+    networks:
+      - network1
   proxy:
       image: manifoldscholar/manifold_proxy:${MANIFOLD_TAG}
       volumes:

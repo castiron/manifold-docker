@@ -5,7 +5,7 @@ build() {
     local "${@}"
     if [[ -z ${manifold_version} ]]
     then
-        local commands=("VERSION (x.x.x)" "IMAGE (api|client|proxy) [OPTIONAL]")
+        local commands=("VERSION (x.x.x)" "IMAGE (api_base|api_services|client|proxy) [OPTIONAL]")
         error_message "You must specify the version of Manifold to build."
         help_message ${FUNCNAME[0]} "${commands[@]}"
         exit 1
@@ -13,19 +13,48 @@ build() {
 
 
     case "${manifold_image}" in
-        api)
-            _remove_api_image
+        api_services)
+            _remove_api_rails_image
+            _remove_api_cable_image
+            _remove_api_clockwork_image
+            _remove_api_sidekiq_image
             _cleanup_images
-            _build_api_image
+            _build_api_rails_image
+            _build_api_cable_image
+            _build_api_clockwork_image
+            _build_api_sidekiq_image
+            ;;
+        api_base)
+            _remove_api_base_image
+            _cleanup_images
+            _build_api_base_image
+            ;;
+        api_cable)
+            _remove_api_cable_image
+            _cleanup_images
+            _build_api_cable_image
+            ;;
+        api_clockwork)
+            _remove_api_clockwork_image
+            _cleanup_images
+            _build_api_clockwork_image
+            ;;
+        api_rails)
+            _remove_api_rails_image
+            _cleanup_images
+            _build_api_rails_image
+            ;;
+        api_sidekiq)
+            _remove_api_sidekiq_image
+            _cleanup_images
+            _build_api_sidekiq_image
             ;;
         client)
             _remove_client_image
-            _cleanup_images
             _build_client_image
             ;;
         proxy)
             _remove_proxy_image
-            _cleanup_images
             _build_proxy_image
             ;;
         *)
@@ -53,15 +82,59 @@ _build_all_images() {
     _build_proxy_image
 }
 
-_remove_api_image() {
-    standard_message "Removing existing Manifold (${manifold_version}) API image if found"
+_remove_api_base_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) API BASE image if found"
     sleep 2
-    docker image rm manifoldscholar/manifold_api:${manifold_version}
+    docker image rm manifoldscholar/manifold_api_base:${manifold_version}
 }
-_build_api_image() {
-    standard_message "Building Manifold (${manifold_version}) API image"
+_build_api_base_image() {
+    standard_message "Building Manifold (${manifold_version}) API BASE image"
     sleep 2
-    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api:${manifold_version} -f ${api_dockerfile} .
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api_base:${manifold_version} -f ${api_base_dockerfile} .
+}
+
+_remove_api_rails_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) API RAILS image if found"
+    sleep 2
+    docker image rm manifoldscholar/manifold_api_rails:${manifold_version}
+}
+_build_api_rails_image() {
+    standard_message "Building Manifold (${manifold_version}) API RAILS image"
+    sleep 2
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api_rails:${manifold_version} -f ${api_rails_dockerfile} .
+}
+
+_remove_api_cable_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) API CABLE image if found"
+    sleep 2
+    docker image rm manifoldscholar/manifold_api_cable:${manifold_version}
+}
+_build_api_cable_image() {
+    standard_message "Building Manifold (${manifold_version}) API CABLE image"
+    sleep 2
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api_cable:${manifold_version} -f ${api_cable_dockerfile} .
+}
+
+_remove_api_clockwork_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) API CLOCKWORK image if found"
+    sleep 2
+    docker image rm manifoldscholar/manifold_api_clockwork:${manifold_version}
+}
+_build_api_clockwork_image() {
+    standard_message "Building Manifold (${manifold_version}) API CLOCKWORK image"
+    sleep 2
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api_clockwork:${manifold_version} -f ${api_clockwork_dockerfile} .
+}
+
+_remove_api_sidekiq_image() {
+    standard_message "Removing existing Manifold (${manifold_version}) API SIDEKIQ image if found"
+    sleep 2
+    docker image rm manifoldscholar/manifold_api_sidekiq:${manifold_version}
+}
+_build_api_sidekiq_image() {
+    standard_message "Building Manifold (${manifold_version}) API SIDEKIQ image"
+    sleep 2
+    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api_sidekiq:${manifold_version} -f ${api_sidekiq_dockerfile} .
 }
 
 _remove_client_image() {
