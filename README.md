@@ -6,7 +6,7 @@
 </div>
 
 <p align="center">
-    Manifold is an intuitive, collaborative platform for scholarly publishing. With iterative texts, powerful annotation tools, rich media support, and robust community dialogue, Manifold transforms scholarly publications into living digital works. 
+    Manifold is an intuitive, collaborative platform for scholarly publishing. With iterative texts, powerful annotation tools, rich media support, and robust community dialogue, Manifold transforms scholarly publications into living digital works.
 </p>
 
 <p align="center">
@@ -61,17 +61,13 @@ git-bash settings selected during testing:
 * Install Docker for your platform: https://docs.docker.com/install/
     * _Recommended that you install the current version but minimum version >= 17.03_
     * _For Windows minimum version >= 18.06.0-ce-win70 (build: 19075)_
- 
+
 * Install docker-compose for your platform: https://docs.docker.com/compose/install/
     * _Note: docker-compose might be installed already with docker depending on your platform._
 
-* Install docker-machine for your platform: https://docs.docker.com/machine/install-machine/
-    * _Note: docker-machine might be installed already with docker depending on your platform._
-
-
 ## Caveats
 
-### Windows 
+### Windows
 
 To work around path conversion issues in git-bash you need to run the following prior to using the `./manifold-docker`
 script.
@@ -88,7 +84,7 @@ compose:
 ## Setup
 
 ### Option 1
-Clone this repo: 
+Clone this repo:
 
 `git clone https://github.com/ManifoldScholar/manifold-docker.git`
 
@@ -104,50 +100,20 @@ https://github.com/ManifoldScholar/manifold-docker/releases
 
 ## Getting started
 
-### Run containers using Docker Compose
+Build the base API Image:
+`./manifold-docker build 3.0.0 api_base`
 
-`./manifold-docker compose up 1.0.1`
+Build the API services:
+`./manifold-docker build 3.0.0 api_services`
 
-After the script completes, some basic usage information will be displayed.
+Build the Client:
+`./manifold-docker build 3.0.0`
 
-An optional domain parameter can be passed to allow access using a domain.
+Run it:
+`MANIFOLD_TAG=3.0.0 docker-compose -f compose/docker-compose.yml up -d`
 
-`./manifold-docker compose up 1.0.1 example.domain.com`
+View it:
+https://manifold.lvh:4001/
 
-Take it down
-
-`./manifold-docker compose down`
-
-### Run services in Docker swarm mode
-
-Alternatively, you can run this through Docker swarm
-
-`./manifold-docker stack up 1.0.1`
-
-After the script completes, some basic usage information will be displayed.
-
-An optional domain parameter can be passed to allow access using a domain.
-
-`./manifold-docker stack up 1.0.1 example.domain.com`
-
-Take it down
-
-`./manifold-docker stack down`
-
-### Run commands in a container or service
-
-Once the containers or services are running, if you need to run additional commands you can do so using the following:
-
-#### Containers
-
-`./manifold-docker compose run VERSION CONTAINER`
-
-Valid CONTAINER values: api | client | proxy
-
-
-
-#### Services
-
-`/manifold-docker stack run SERVICE`
-
-Valid SERVICE values: manifold_api | manifold_client | manifold_proxy
+Stop it:
+`docker-compose -f compose/docker-compose.yml down -v`

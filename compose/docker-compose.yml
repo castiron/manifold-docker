@@ -27,7 +27,7 @@ services:
       - "9200:9200"
     networks:
       - network1
-  redis: 
+  redis:
     image: redis:alpine
     ports:
       - "6379:6379"
@@ -85,7 +85,7 @@ services:
     volumes:
       - manifold_data:/manifold_data
       - manifold_sockets:/manifold_sockets
-    command: yarn run start
+    command: yarn run start-docker
     networks:
       - network1
   proxy:

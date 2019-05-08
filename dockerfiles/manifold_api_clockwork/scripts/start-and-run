@@ -12,6 +12,5 @@ done
 
 >&2 echo "Postgres is up - executing command"
 
-
 # Run additional command(s) added to docker-compose.yml
 exec ${CMD}

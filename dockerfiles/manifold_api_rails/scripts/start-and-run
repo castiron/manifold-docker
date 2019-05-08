@@ -13,8 +13,7 @@ done
 >&2 echo "Postgres is up - executing command"
 
 # Setup PostgreSQL Database
-bin/rails db:migrate && bin/rails db:seed && \
-bin/rails manifold:user:create:admin['email@example.com','M@n1f0ld','First','Last']
+bin/rails db:migrate && bin/rails db:seed
 
 # Run additional command(s) added to docker-compose.yml
 exec ${CMD}

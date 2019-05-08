@@ -2,10 +2,6 @@ ARG MANIFOLD_VERSION
 
 FROM manifoldscholar/manifold_api_base:$MANIFOLD_VERSION
 
-ARG MANIFOLD_VERSION
+COPY dockerfiles/manifold_api_rails/scripts/start-and-run /opt/manifold/api/start-and-run
 
-COPY dockerfiles/manifold_api_rails/scripts/start-and-run /opt/manifold-$MANIFOLD_VERSION/api/start-and-run
-
-WORKDIR /opt/manifold-$MANIFOLD_VERSION/api
-
-#CMD ["bin/sidekiq -i 2"]
+WORKDIR /opt/manifold/api

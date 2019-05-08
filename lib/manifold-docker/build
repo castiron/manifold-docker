@@ -90,7 +90,7 @@ _remove_api_base_image() {
 _build_api_base_image() {
     standard_message "Building Manifold (${manifold_version}) API BASE image"
     sleep 2
-    docker build --no-cache --build-arg MANIFOLD_VERSION=${manifold_version} -t manifoldscholar/manifold_api_base:${manifold_version} -f ${api_base_dockerfile} .
+    docker build --no-cache -t manifoldscholar/manifold_api_base:${manifold_version} -f ${api_base_dockerfile} .
 }
 
 _remove_api_rails_image() {
